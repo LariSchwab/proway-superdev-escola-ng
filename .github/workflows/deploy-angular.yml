@@ -13,7 +13,7 @@ jobs:
           ref: main # ref é um input que diz qual será o nome da branch que utilizaremos
       - name: "Listar arquivos e pastas"
         run: |
-          ls - la
+          ls -la
       - name: "Configurar o git na pipeline"
         run: |
           echo "Configurando o git na pipeline"
