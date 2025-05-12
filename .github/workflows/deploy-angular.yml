@@ -4,7 +4,7 @@ on:
 
 jobs:
   configurar:
-    runs-on: ubuntu=latest
+    runs-on: ubuntu-latest
     steps:
       - name: "Configurar o git na pipeline"
         run: |
