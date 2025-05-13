@@ -46,7 +46,7 @@ jobs:
           git config --global user.email "larissa.schwab@yahoo.com"
           npm install --global angular-cli-ghpages
       - name: Deploy to GitHub Pages
-        run: npx angular-cli-ghpages --dir=dist/proway-superdev-escola-ng/browser --no-silent
+        run: npx angular-cli-ghpages --dir=dist/escola-ng/browser --no-silent
         env:
           cli: true
           GH_TOKEN: ${{ secrets.TOKEN_TO_DEPLOY }}
