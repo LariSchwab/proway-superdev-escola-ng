@@ -29,6 +29,11 @@ export class NavbarComponent {
         icon: 'pi pi-graduation-cap',
         command: () => this.navegar("/cursos") 
       },
+      {
+        label: 'Alunos',
+        icon: 'pi pi-user',
+        command: () => this.navegar("/alunos") 
+      },
     ]
   }
   private navegar(caminho: string){
