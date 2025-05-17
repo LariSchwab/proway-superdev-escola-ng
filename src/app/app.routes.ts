@@ -6,5 +6,6 @@ import { AlunosListaComponent } from './components/alunos/alunos-lista/alunos-li
 export const routes: Routes = [
     {path: "cursos", component: CursosListaComponent},
     {path: "cursos/cadastro", component: CursoCadastroComponent},
-    {path: "alunos", component: AlunosListaComponent}
+    {path: "alunos", component: AlunosListaComponent},
+    {path: "alunos/lista", component: AlunosListaComponent},
 ];
