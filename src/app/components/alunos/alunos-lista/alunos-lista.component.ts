@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Aluno } from '../../../models/aluno';
 import { ButtonModule } from 'primeng/button';
 import { Dialog } from 'primeng/dialog';
@@ -14,6 +14,7 @@ import { AlunoCadastro } from '../../../models/aluno-cadastro';
 import { FormsModule } from '@angular/forms';
 import { InputMaskModule } from 'primeng/inputmask';
 import { DatePicker } from 'primeng/datepicker';
+import { AlunoService } from '../../../services/aluno.service';
 
 @Component({
   selector: 'app-alunos-lista',
@@ -37,34 +38,69 @@ import { DatePicker } from 'primeng/datepicker';
     DatePipe, 
     FormatarCpfPipe, 
     MessageService, 
-    ConfirmationService]
+    ConfirmationService,
+    AlunoService,
+  ]
 })
-export class AlunosListaComponent {
+export class AlunosListaComponent implements OnInit{
   alunos: Aluno[];
   alunoCadastro: AlunoCadastro; // objeto que será utilizado na dialog(modal) para cadastrar
-  visible: boolean = false;
+  dialogVisivelCadastrarEditar: boolean = false;
+  dialogTituloCadastrarEditar?: string;
+  idAlunoEditar?: number;
+  carregandoAlunos: boolean = false;
   dataMinima: Date;
   dataMaxima: Date;
 
-  constructor(private confirmationService: ConfirmationService, private messageService: MessageService){
-    this.alunos = [
-      new Aluno("Matheus", "da Silva", new Date(2000, 4, 5), 1, "123.456.789-10"),
-      new Aluno("Maria", "da Silva", new Date(2000, 4, 5), 2, "921.556.889-11")
-    ]
+  constructor(
+    private confirmationService: ConfirmationService, 
+    private messageService: MessageService,
+    private alunoService: AlunoService,
+  ){
+    this.alunos = []
 
     this.alunoCadastro = new AlunoCadastro();
 
     let dataHoraAgora = new Date(Date.now());
 
     this.dataMinima = new Date(1990, 0, 1);
-    this.dataMaxima = new Date(dataHoraAgora.getFullYear(), dataHoraAgora.getMonth(), dataHoraAgora.getDate())
-  }
-    
-  abrirModalCadastrar(){
-    this.visible = true;    
+    this.dataMaxima = new Date(dataHoraAgora.getFullYear(), dataHoraAgora.getMonth(), dataHoraAgora.getDate(), 23, 59, 59)
   }
 
-  confirm1(event: Event) {
+  ngOnInit(): void {
+    this.carregarAlunos();
+  }
+    
+  private carregarAlunos() {
+    this.carregandoAlunos = true;
+    // Fazer a requisição para o back-end
+    this.alunoService.obterTodos().subscribe({
+      next: alunos => this.alunos = alunos,
+      error: erro => console.log("Ocorreu um erro ao carregar a lista de alunos:" + erro),
+      complete: () => this.carregandoAlunos = false
+    });
+  }
+
+  abrirModalCadastrar(){
+    this.dialogTituloCadastrarEditar = "Cadastro de Aluno";
+    this.alunoCadastro = new AlunoCadastro();
+    this.idAlunoEditar = undefined;
+    this.dialogVisivelCadastrarEditar = true;    
+  }
+
+   abrirModalEditar(aluno: Aluno){
+    this.dialogTituloCadastrarEditar = `Editar Aluno - ${aluno.nome.toString()}`;
+    this.alunoCadastro = new AlunoCadastro();
+    this.alunoCadastro.nome = aluno.nome;
+    this.alunoCadastro.sobrenome = aluno.sobrenome;
+    this.alunoCadastro.cpf = aluno.cpf;
+    this.alunoCadastro.dataNascimento = new Date(aluno.dataNascimento!);
+    this.idAlunoEditar = aluno.id;
+
+    this.dialogVisivelCadastrarEditar = true;
+  }
+
+  confirm1(event: Event, alunoId: number) {
         this.confirmationService.confirm({
             target: event.target as EventTarget,
             message: 'Deseja realmente apagar?',
@@ -73,24 +109,63 @@ export class AlunosListaComponent {
             closeOnEscape: true,
             icon: 'pi pi-exclamation-triangle',
             rejectButtonProps: {
-                label: 'Cancel',
+                label: 'Cancelar',
                 severity: 'secondary',
                 outlined: true,
             },
             acceptButtonProps: {
-                label: 'Save',
+                label: 'Deletar',
+                severity: 'danger'
             },
-            accept: () => {
-                this.messageService.add({ severity: 'info', summary: 'Confirmed', detail: 'You have accepted' });
-            },
-            reject: () => {
-                this.messageService.add({
-                    severity: 'error',
-                    summary: 'Rejected',
-                    detail: 'You have rejected',
-                    life: 3000,
-                });
-            },
+            accept: () => this.apagar(alunoId)
         });
-    }
+  }
+
+  private apagar(alunoId: number){
+    this.alunoService.apagar(alunoId).subscribe({
+      next: () => this.apresentarMensagemApagado(),
+      error: erro => console.log(`Ocorreu um erro ao apagar o aluno: ${erro}`),
+    })
+  }
+
+  private apresentarMensagemApagado(){
+    this.messageService.add({ severity: 'success', summary: 'Sucesso', detail: 'Aluno removido com sucesso' });
+    this.carregarAlunos();
+  }
+
+  cadastrar(){
+    this.alunoService.cadastrar(this.alunoCadastro).subscribe({
+      next: aluno => this.apresentarMensagemCadastrado(),
+      error: erro => console.log(`Ocorreu um erro ao cadastrar o aluno:" ${erro}`),
+    })
+  }
+
+  private apresentarMensagemCadastrado(){
+    this.messageService.add({ severity: 'success', summary: 'Sucesso', detail: 'Aluno Cadastrado com sucesso' });
+    this.dialogVisivelCadastrarEditar = false
+    this.alunoCadastro = new AlunoCadastro();
+    this.carregarAlunos();      
+  }
+
+  salvar(){
+    if(this.idAlunoEditar === undefined)
+      this.cadastrar();
+    else
+      this.editar();
+  }
+
+  private editar(){
+    this.alunoService.alterar(this.idAlunoEditar!, this.alunoCadastro).subscribe({
+      next: aluno => this.apresentarMensagemEditado(),
+      error: erro => console.log("Ocorreu um erro ao editar o aluno:" + erro),
+    })
+  }
+
+  private apresentarMensagemEditado(){
+    this.messageService.add({ severity: 'success', summary: 'Sucesso', detail: 'Aluno alterado com sucesso' });
+    this.dialogVisivelCadastrarEditar = false
+    this.idAlunoEditar = undefined;
+    this.alunoCadastro = new AlunoCadastro();
+    this.carregarAlunos();
+  }
 }
