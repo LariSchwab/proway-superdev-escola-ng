@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Curso } from '../models/curso';
-import { CursoCadastro } from '../curso-cadastro';
+import { CursoCadastro } from '../models/curso-cadastro';
 import { HttpClient } from '@angular/common/http';
 import { CursoEditar } from '../models/curso-editar';
 

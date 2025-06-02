@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 
 import { FloatLabelModule } from 'primeng/floatlabel';
 import { InputTextModule } from 'primeng/inputtext';
-import { CursoCadastro } from '../../../curso-cadastro';
+import { CursoCadastro } from '../../../models/curso-cadastro';
 import { InputMaskModule } from 'primeng/inputmask';
 import { ButtonModule } from 'primeng/button';
 import { FormsModule } from '@angular/forms';
@@ -38,8 +38,8 @@ export class CursoCadastroComponent {
 
   cadastrar() {
     this.cursoService.cadastrar(this.curso).subscribe({
-      next: aluno => this.apresentarMensagemCadastrado(),
-      error: erro => console.log("Ocorreu um erro ao cadastrar o aluno:" + erro),      
+      next: curso => this.apresentarMensagemCadastrado(),
+      error: erro => console.log("Ocorreu um erro ao cadastrar o curso:" + erro),      
     })
   }
 
