@@ -11,6 +11,7 @@ import { DatePickerModule } from 'primeng/datepicker';
 import { FormacaoCadastro } from '../../../models/formacao-cadastro';
 import { FormacaoService } from '../../../services/formacao.service';
 import { TextareaModule } from 'primeng/textarea';
+import { CalendarModule } from 'primeng/calendar';
 
 @Component({
   selector: 'app-formacao-cadastro',
@@ -23,10 +24,11 @@ import { TextareaModule } from 'primeng/textarea';
     ToastModule,
     DatePickerModule,
     TextareaModule,
+    CalendarModule,
   ],
   providers: [MessageService],
   templateUrl: './formacao-cadastro.component.html',
-  styleUrl: './formacao-cadastro.component.css'
+  styleUrls: ['./formacao-cadastro.component.css']
 })
 export class FormacaoCadastroComponent {
   formacao: FormacaoCadastro;
