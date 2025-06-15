@@ -1,12 +1,11 @@
 import { Component } from '@angular/core';
-
-import { FloatLabelModule } from 'primeng/floatlabel';
+import { FormsModule } from '@angular/forms';
 import { InputTextModule } from 'primeng/inputtext';
 import { CursoCadastro } from '../../../models/curso-cadastro';
+import { FloatLabelModule } from 'primeng/floatlabel';
 import { InputMaskModule } from 'primeng/inputmask';
 import { ButtonModule } from 'primeng/button';
-import { FormsModule } from '@angular/forms';
-import { Toast, ToastModule } from 'primeng/toast';
+import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
 import { CursoService } from '../../../services/curso.service';
 import { Router } from '@angular/router';

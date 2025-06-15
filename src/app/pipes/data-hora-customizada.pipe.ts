@@ -11,5 +11,4 @@ export class DataHoraCustomizadaPipe implements PipeTransform {
   transform(data: Date, ...args: unknown[]): unknown {
     return this.datePipe.transform(data, "dd/MM/yyyy");
   }
-
 }

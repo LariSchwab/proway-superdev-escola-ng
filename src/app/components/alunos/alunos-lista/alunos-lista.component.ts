@@ -15,6 +15,8 @@ import { FormsModule } from '@angular/forms';
 import { InputMaskModule } from 'primeng/inputmask';
 import { DatePicker } from 'primeng/datepicker';
 import { AlunoService } from '../../../services/aluno.service';
+import { IconFieldModule } from 'primeng/iconfield';
+import { InputIconModule } from 'primeng/inputicon';
 
 @Component({
   selector: 'app-alunos-lista',
@@ -30,6 +32,8 @@ import { AlunoService } from '../../../services/aluno.service';
     FormsModule,
     InputMaskModule,
     DatePicker,
+    IconFieldModule,
+    InputIconModule,
   ],
   templateUrl: './alunos-lista.component.html',
   styleUrl: './alunos-lista.component.css',
@@ -49,6 +53,8 @@ export class AlunosListaComponent implements OnInit{
   dialogTituloCadastrarEditar?: string;
   idAlunoEditar?: number;
   carregandoAlunos: boolean = false;
+  buscandoRegistros: boolean = false;
+  pesquisa: string = "";
   dataMinima: Date;
   dataMaxima: Date;
 
@@ -70,6 +76,11 @@ export class AlunosListaComponent implements OnInit{
   ngOnInit(): void {
     this.carregarAlunos();
   }
+
+  realizarBuscaFiltrando(){
+    this.buscandoRegistros = true;
+    this.carregarAlunos();
+  }
     
   private carregarAlunos() {
     this.carregandoAlunos = true;
@@ -77,7 +88,10 @@ export class AlunosListaComponent implements OnInit{
     this.alunoService.obterTodos().subscribe({
       next: alunos => this.alunos = alunos,
       error: erro => console.log("Ocorreu um erro ao carregar a lista de alunos:" + erro),
-      complete: () => this.carregandoAlunos = false
+      complete: () => {
+        this.carregandoAlunos = false
+        this.buscandoRegistros = false;
+      }
     });
   }
 
